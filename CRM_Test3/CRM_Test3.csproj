@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="frmSync_CRMData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSync_CRMData.Designer.cs">
+      <DependentUpon>frmSync_CRMData.cs</DependentUpon>
+    </Compile>
     <Compile Include="Main_Sync_CRMData.cs">
       <SubType>Form</SubType>
     </Compile>

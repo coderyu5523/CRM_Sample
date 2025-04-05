@@ -107,21 +107,22 @@ namespace CRM_Test3
             }
         }
 
+        // CRM 스케줄 실행
         private void cRMDataSyncToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // 자식 폼이 이미 열려있는지 확인
-          //  foreach (Form frm in this.MdiChildren)
-          //  {
-          //      if (frm is frmSync_CRMData)
-          //      {
-          //          frm.Activate(); // 이미 열려있으면 활성화
-          //          return;
-          //      }
-          //  }
-          //
-          //  frmSync_CRMData sync_CRMData = new frmSync_CRMData(this);
-          //  sync_CRMData.MdiParent = this; // MDI 부모 설정
-          //  sync_CRMData.Show();
+            foreach (Form frm in this.MdiChildren)
+            {
+                if (frm is frmSync_CRMData)
+                {
+                    frm.Activate(); // 이미 열려있으면 활성화
+                    return;
+                }
+            }
+          
+            frmSync_CRMData sync_CRMData = new frmSync_CRMData(this);
+            sync_CRMData.MdiParent = this; // MDI 부모 설정
+            sync_CRMData.Show();
         }
 
         private void dataSync모니터링ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -150,17 +151,17 @@ namespace CRM_Test3
         private void sync스케줄설정ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // 자식 폼이 이미 열려있는지 확인
-         //   foreach (Form frm in this.MdiChildren)
-         //   {
-         //       if (frm is frmScheduleForm)
-         //       {
-         //           frm.Activate(); // 이미 열려있으면 활성화
-         //           return;
-         //       }
-         //   }
-         //   frmScheduleForm scheduleForm = new frmScheduleForm();
-         //   scheduleForm.MdiParent = this; // MDI 부모 설정
-         //   scheduleForm.Show();
+           // foreach (Form frm in this.MdiChildren)
+           // {
+           //     if (frm is frmScheduleForm)
+           //     {
+           //         frm.Activate(); // 이미 열려있으면 활성화
+           //         return;
+           //     }
+           // }
+           // frmScheduleForm scheduleForm = new frmScheduleForm();
+           // scheduleForm.MdiParent = this; // MDI 부모 설정
+           // scheduleForm.Show();
 
         }
 
