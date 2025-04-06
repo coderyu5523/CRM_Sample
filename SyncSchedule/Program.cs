@@ -1,10 +1,11 @@
-﻿using System;
+﻿using SyncScheduleManager;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CRM_Test3
+namespace SyncSchedule
 {
     internal static class Program
     {
@@ -16,7 +17,7 @@ namespace CRM_Test3
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new mainSyncCRMData());
+            Application.Run(new frmScheduleForm());
         }
     }
 }

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM_Test3", "CRM_Test3\CRM_Test3.csproj", "{0CC5B5E5-0F96-4DF9-B596-4DCF4734419A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncCRMData", "CRM_Test3\SyncCRMData.csproj", "{0CC5B5E5-0F96-4DF9-B596-4DCF4734419A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncSchedule", "SyncSchedule\SyncSchedule.csproj", "{0A5889EE-2DAF-4457-92AA-091FB9576CBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{0CC5B5E5-0F96-4DF9-B596-4DCF4734419A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CC5B5E5-0F96-4DF9-B596-4DCF4734419A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CC5B5E5-0F96-4DF9-B596-4DCF4734419A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A5889EE-2DAF-4457-92AA-091FB9576CBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A5889EE-2DAF-4457-92AA-091FB9576CBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A5889EE-2DAF-4457-92AA-091FB9576CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A5889EE-2DAF-4457-92AA-091FB9576CBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

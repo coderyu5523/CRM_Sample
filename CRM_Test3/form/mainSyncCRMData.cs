@@ -1,25 +1,57 @@
-﻿using System;
+﻿using Quartz;
+using Quartz.Impl;
+using SyncCRMData.SyncMonitoring;
+using SyncScheduleManager;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CRM_Test3
 {
-    public partial class Main_Sync_CRMData : Form
+    public partial class mainSyncCRMData : Form
 
     {
+        private IScheduler scheduler; // 스케줄러 객체
+        private ScheduleStats scheduleStats; // 스케줄 상태 객체
+
         // 자식폼 번호 초기화
         private int childFormNumber = 0;
 
-        public Main_Sync_CRMData()
+        public mainSyncCRMData()
         {
             InitializeComponent();
+            scheduleStats = new ScheduleStats(); // 스케줄 상태 객체 생성'
+
+            this.Load += Main_Sync_CRMData_Load;
+        }
+
+        // 폼이 로드될 때 스케줄러를 초기화 및 시작
+        private async void Main_Sync_CRMData_Load(object sender, EventArgs e)
+        {
+            await StartScheduler(scheduleStats); // 스케줄러 초기화 및 시작
+        }
+
+        // 스케줄러를 시작하는 메서드
+        public async Task StartScheduler(ScheduleStats stats)
+        { 
+            ISchedulerFactory schedulerFactory = new StdSchedulerFactory();
+            scheduler = await schedulerFactory.GetScheduler();
+
+            await scheduler.Start();
+        }
+
+
+        // 스케줄러 객체를 자식 폼에서 참조하도록 getter 제공
+        public IScheduler GetScheduler()
+        {
+            return scheduler;
         }
 
         private void ShowNewForm(object sender, EventArgs e)
@@ -113,14 +145,14 @@ namespace CRM_Test3
             // 자식 폼이 이미 열려있는지 확인
             foreach (Form frm in this.MdiChildren)
             {
-                if (frm is frmSync_CRMData)
+                if (frm is frmSyncCRMData)
                 {
                     frm.Activate(); // 이미 열려있으면 활성화
                     return;
                 }
             }
           
-            frmSync_CRMData sync_CRMData = new frmSync_CRMData(this);
+            frmSyncCRMData sync_CRMData = new frmSyncCRMData(this);
             sync_CRMData.MdiParent = this; // MDI 부모 설정
             sync_CRMData.Show();
         }
@@ -151,17 +183,17 @@ namespace CRM_Test3
         private void sync스케줄설정ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // 자식 폼이 이미 열려있는지 확인
-           // foreach (Form frm in this.MdiChildren)
-           // {
-           //     if (frm is frmScheduleForm)
-           //     {
-           //         frm.Activate(); // 이미 열려있으면 활성화
-           //         return;
-           //     }
-           // }
-           // frmScheduleForm scheduleForm = new frmScheduleForm();
-           // scheduleForm.MdiParent = this; // MDI 부모 설정
-           // scheduleForm.Show();
+            foreach (Form frm in this.MdiChildren)
+            {
+                if (frm is frmScheduleForm)
+                {
+                    frm.Activate(); // 이미 열려있으면 활성화
+                    return;
+                }
+            }
+            frmScheduleForm scheduleForm = new frmScheduleForm();
+            scheduleForm.MdiParent = this; // MDI 부모 설정
+            scheduleForm.Show();
 
         }
 

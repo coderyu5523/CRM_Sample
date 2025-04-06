@@ -1,6 +1,6 @@
 ﻿namespace CRM_Test3
 {
-    partial class frmSync_CRMData
+    partial class frmSyncCRMData
     {
         /// <summary>
         /// 필수 디자이너 변수입니다.
@@ -52,7 +52,7 @@
             this.btn_Start.TabIndex = 0;
             this.btn_Start.Text = "동기화 시작";
             this.btn_Start.UseVisualStyleBackColor = true;
-            this.btn_Start.Click += new System.EventHandler(this.button1_Click);
+            this.btn_Start.Click += new System.EventHandler(this.btn_Start_Click);
             // 
             // statusStrip1
             // 
