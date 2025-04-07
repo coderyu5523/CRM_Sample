@@ -112,6 +112,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SyncDBConn\SyncDBConn.csproj">
+      <Project>{3d5de7ba-f0c8-4c13-938f-31be29181ed8}</Project>
+      <Name>SyncDBConn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SyncSchedule\SyncSchedule.csproj">
       <Project>{0A5889EE-2DAF-4457-92AA-091FB9576CBB}</Project>
       <Name>SyncSchedule</Name>

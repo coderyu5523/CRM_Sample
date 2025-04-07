@@ -30,6 +30,21 @@ namespace CRM_Test3
             scheduleStats = new ScheduleStats(); // 스케줄 상태 객체 생성'
 
             this.Load += Main_Sync_CRMData_Load;
+
+            string baseDirectory = @"C:\Sync_CRMData\config";
+            string baseDirectory1 = @"C:\Sync_CRMData\Logs";
+
+            // 폴더 존재하지 않으면 생성
+            if (!Directory.Exists(baseDirectory)) 
+            {
+                Directory.CreateDirectory(baseDirectory);
+                Console.WriteLine($"디렉토리를 생성했습니다: {baseDirectory}");
+            }
+            if (!Directory.Exists(baseDirectory1))
+            {
+                Directory.CreateDirectory(baseDirectory1);
+                Console.WriteLine($"디렉토리를 생성했습니다: {baseDirectory1}");
+            }
         }
 
         // 폼이 로드될 때 스케줄러를 초기화 및 시작

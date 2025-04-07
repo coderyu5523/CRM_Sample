@@ -1,4 +1,5 @@
 ﻿using System;
+using SyncDBConn;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,28 +9,45 @@ using System.Text;
 //using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SyncSchedule;
+using System.Data.SqlClient;
 
 namespace SyncScheduleManager
 {
     public partial class frmScheduleForm : Form
     {
-        //public frmScheduleForm()
-        //{
-        //    InitializeComponent();
-        //}
         private ComboBox cboScheduleType;
         private DateTimePicker dtpSpecificTime;
         private NumericUpDown numInterval;
         private CheckedListBox clbWeekDays;
         private Button btnSave, btnLoad;
+        private DBConnInfo dBConnInfo;
 
         public frmScheduleForm()
         {
+            // 폼 로드 중임을 나타내는 설정
+            isFormLoadingOrQuerying = true;
+
+
             InitializeComponent();
 
-            this.dgvTasks.AutoGenerateColumns = false; // 자동으로 컬럼 생성 안 함
-            this.dgvTasks.AllowUserToAddRows = true; // 사용자가 직접 행을 추가할 수 있음
-            this.dgvTasks.AllowUserToDeleteRows = true; // 사용자가 직접 행을 삭제할 수 있음
+            //db 객체 생성
+            dBConnInfo = new DBConnInfo();
+            //ProxyServerInfo proxyServerInfo = new ProxyServerInfo(); // 추후 삭제
+            ProxyServerInfo serverInfo = new ProxyServerInfo();
+
+            if (serverInfo == null) 
+            {
+                return;
+            }
+            // db 객체에 값 대입
+            dBConnInfo.proxyDbIp = serverInfo.serverIp;
+            dBConnInfo.proxyDbId = serverInfo.dbId;
+            dBConnInfo.proxyDbPw = serverInfo.dbPw;
+            dBConnInfo.proxyDbName = serverInfo.dbName;
+            dBConnInfo.proxyDbPort = serverInfo.dbPort;
+
+            GetComboBoxData();
 
 
             pnl_one.Visible = false;
@@ -40,6 +58,44 @@ namespace SyncScheduleManager
             LoadTasks("Init");
         }
 
+        // 폼 로드 중 또는 데이터 조회 중임을 나타내는 플래그
+        private bool isFormLoadingOrQuerying = true;
+
+        private void GetComboBoxData()
+        {
+            try
+            {
+
+                // 데이터베이스 연결
+                //string connectionString = "YourConnectionStringHere";
+                string query = "SELECT  co_cd, co_cd FROM CRMConninfoTable";
+
+                using (SqlConnection connection = new SqlConnection(dBConnInfo.GetProxyConnectionString()))
+                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                {
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+
+                    this.SourceDB.DataSource = dataTable;
+                    this.SourceDB.DisplayMember = "co_cd";
+                    this.SourceDB.ValueMember = "co_cd";
+
+
+                    this.TargetDB.DataSource = dataTable;
+                    this.TargetDB.DisplayMember = "co_cd";
+                    this.TargetDB.ValueMember = "co_cd";
+
+                }
+            }
+            catch (Exception ex)
+            {
+                // 예외 처리
+                Console.WriteLine($"데이터를 로드하는 중 오류 발생: {ex.Message}");
+                MessageBox.Show("데이터를 불러오는 중 오류가 발생했습니다. 관리자에게 문의하세요.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
 
 
         private void SetControlVisibility1(bool showSpecificTime, bool showInterval, bool showWeekDays)
