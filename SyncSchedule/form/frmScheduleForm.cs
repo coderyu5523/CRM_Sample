@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SyncSchedule;
 using System.Data.SqlClient;
+using System.Diagnostics;
+
 
 namespace SyncScheduleManager
 {
@@ -34,7 +36,10 @@ namespace SyncScheduleManager
             //db 객체 생성
             dBConnInfo = new DBConnInfo();
             //ProxyServerInfo proxyServerInfo = new ProxyServerInfo(); // 추후 삭제
-            ProxyServerInfo serverInfo = new ProxyServerInfo();
+            
+
+            // Json 파일 읽어서 db 접속 정보 가져옴
+            serverInfo = ProxyServerInfoManager.LoadServerInfo;
 
             if (serverInfo == null) 
             {
@@ -46,6 +51,8 @@ namespace SyncScheduleManager
             dBConnInfo.proxyDbPw = serverInfo.dbPw;
             dBConnInfo.proxyDbName = serverInfo.dbName;
             dBConnInfo.proxyDbPort = serverInfo.dbPort;
+
+
 
             GetComboBoxData();
 
@@ -65,22 +72,33 @@ namespace SyncScheduleManager
         {
             try
             {
+                Debug.WriteLine("1");
 
-                // 데이터베이스 연결
-                //string connectionString = "YourConnectionStringHere";
-                string query = "SELECT  co_cd, co_cd FROM CRMConninfoTable";
+                //KR, CRM 조회 
+                string query = "SELECT co_cd, co_cd FROM CRMConninfoTable";
+                Debug.WriteLine("2");
+                
 
-                using (SqlConnection connection = new SqlConnection(dBConnInfo.GetProxyConnectionString()))
+                // DB 연결 객체 셍성
+                using (SqlConnection connection = new SqlConnection(dBConnInfo.GetProxyConnectionString())) 
+                // SQL 실행
                 using (SqlCommand command = new SqlCommand(query, connection))
                 using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+
                 {
+                    Debug.WriteLine("3");
+
                     DataTable dataTable = new DataTable();
+                    Debug.WriteLine("4");
+
                     adapter.Fill(dataTable);
+                    Debug.WriteLine("5");
 
                     this.SourceDB.DataSource = dataTable;
                     this.SourceDB.DisplayMember = "co_cd";
                     this.SourceDB.ValueMember = "co_cd";
 
+                    Debug.WriteLine("6");
 
                     this.TargetDB.DataSource = dataTable;
                     this.TargetDB.DisplayMember = "co_cd";
@@ -90,6 +108,11 @@ namespace SyncScheduleManager
             }
             catch (Exception ex)
             {
+                Debug.WriteLine("7");
+                Debug.WriteLine("오류 메시지: " + ex.Message);
+                Debug.WriteLine("스택 트레이스: " + ex.StackTrace);
+
+
                 // 예외 처리
                 Console.WriteLine($"데이터를 로드하는 중 오류 발생: {ex.Message}");
                 MessageBox.Show("데이터를 불러오는 중 오류가 발생했습니다. 관리자에게 문의하세요.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);

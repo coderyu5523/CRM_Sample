@@ -1,0 +1,58 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Text.Json;
+using System.Windows.Forms;
+
+namespace SyncDBConn
+{
+    public class ProxyServerInfoManager
+    {
+        private static string baseDirectory = @"C:\Sync_CRMData";
+        private static readonly string filePath = Path.Combine(baseDirectory, "config", "proxy_serverinfo.json");
+
+
+        public static ProxyServerInfo LoadServerInfo
+        {
+            get
+            {
+                if (File.Exists(filePath))
+                {
+                    var json = File.ReadAllText(filePath);
+
+                    try
+                    {
+                        var serverInfoList = JsonSerializer.Deserialize<List<ProxyServerInfo>>(json);
+
+                        if (serverInfoList != null && serverInfoList.Count > 0)
+                        {
+                            return serverInfoList[0];
+                        }
+                    }
+                    catch (JsonException)
+                    {
+                        // JSON 데이터가 단일 객체일 가능성을 재확인
+                        try
+                        {
+                            return JsonSerializer.Deserialize<ProxyServerInfo>(json);
+                        }
+                        catch (JsonException ex)
+                        {
+                            Console.WriteLine($"JSON 변환 실패: {ex.Message}");
+
+                        }
+                    }
+                    MessageBox.Show("Proxy서버 정보가 저장되지 않았습니다. Proxy DB서버 연결정보를 확인하세요.");
+                    return null;
+                }
+            }
+        }
+        public static void SaveProxyServerInfo(ProxyServerInfo serverInfo)
+        {
+            List<ProxyServerInfo> serverInfos = new List<ProxyServerInfo>();
+            // 기존 파일 있는지 확인, 있으면 불러오기
+
+        }
