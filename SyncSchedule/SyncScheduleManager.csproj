@@ -91,10 +91,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="class\ProxyServerInfo.cs" />
     <Compile Include="class\ScheduleFileManager.cs" />
-    <Compile Include="class\SyncSchedule.cs" />
-    <Compile Include="class\SyncTask.cs" />
+    <Compile Include="object\CombinedTaskSchedule.cs" />
+    <Compile Include="object\SyncSchedule.cs" />
+    <Compile Include="object\SyncTask.cs" />
+    <Compile Include="class\TaskFileManager.cs" />
+    <Compile Include="class\TaskScheduleManager.cs" />
     <Compile Include="form\frmScheduleForm.cs">
       <SubType>Form</SubType>
     </Compile>

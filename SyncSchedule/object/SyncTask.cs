@@ -10,7 +10,8 @@ namespace SyncScheduleManager
     {
         public int TaskId { get; set; }                  // 작업 단위 ID
         public string TaskName { get; set; }             // 작업 단위 명칭
-        public List<string> ReferenceTables { get; set; } // 참조 테이블 목록 (여러 개일 수 있음)
+        public List<string> ReferenceTables { get; set; } // 원본 테이블 목록 (여러 개일 수 있음)
+        public string TargetTable { get; set; }          // 목적지 테이블
         public string ProcedureName { get; set; }        // 호출할 프로시저명
         public string SourceDB { get; set; }             // 원본 DB
         public string TargetDB { get; set; }             // 대상 DB

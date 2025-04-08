@@ -6,11 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace SyncDBConn
 {
     public class ProxyServerInfoManager
     {
+      
         private static string baseDirectory = @"C:\Sync_CRMData";
         private static readonly string filePath = Path.Combine(baseDirectory, "config", "proxy_serverinfo.json");
 
@@ -20,6 +22,7 @@ namespace SyncDBConn
 
             if (File.Exists(filePath))
             {
+
                 var json = File.ReadAllText(filePath);
 
                 try
@@ -44,9 +47,9 @@ namespace SyncDBConn
 
                     }
                 }
-                MessageBox.Show("Proxy서버 정보가 저장되지 않았습니다. Proxy DB서버 연결정보를 확인하세요.");
-                return null;
             }
+            MessageBox.Show("Proxy서버 정보가 저장되지 않았습니다. Proxy DB서버 연결정보를 확인하세요.");
+            return null;
         }
 
         public static void SaveProxyServerInfo(ProxyServerInfo serverInfo)

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SyncSchedule
+namespace SyncScheduleManager
 {
     internal static class Program
     {

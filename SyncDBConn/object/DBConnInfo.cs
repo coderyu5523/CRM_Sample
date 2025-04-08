@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SyncDBConn
 {
-    // 중계 서버 정보
     public class DBConnInfo
     {
+
         public string proxyDbIp = "192.168.10.158";
         public string proxyDbId = "eis";
         public string proxyDbPw = "itsp@7735";
@@ -17,23 +17,22 @@ namespace SyncDBConn
         public string proxyDbPort = "1616";
 
 
+        // Proxy DB 연결 문자열 반환
         public string GetProxyConnectionString()
         {
             return Setting(proxyDbIp, proxyDbId, proxyDbPw, proxyDbName, proxyDbPort);
         }
 
-        private static string Setting(string ip, string id, string password, string dbName, string port)
+        private static string Setting(string ip = "localhost", string id = "sa", string password = "1234", string dbName = "dio_implant", string port = "1433")
         {
-
             string dbConn = "SERVER=" + ip + "," + port + ";" +
                             "DATABASE=" + dbName + ";" +
                             "UID=" + id + ";" +
                             "PWD=" + password + ";" +
                             "Connection Timeout=10";
-
             return dbConn;
-
         }
 
     }
+
 }

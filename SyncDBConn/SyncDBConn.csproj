@@ -80,8 +80,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="class\DBConnInfo.cs" />
-    <Compile Include="class\ProxyServerInfo.cs" />
+    <Compile Include="class\DBConnectionInfoProvider.cs" />
+    <Compile Include="object\DBConnInfo.cs" />
+    <Compile Include="object\ProxyServerInfo.cs" />
     <Compile Include="class\ProxyServerInfoManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

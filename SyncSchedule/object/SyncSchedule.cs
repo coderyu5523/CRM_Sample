@@ -15,5 +15,6 @@ namespace SyncScheduleManager
         public DateTime? SpecificTime { get; set; } // 한 번 수행 또는 일별 수행 시의 지정된 시간
         public TimeSpan? Interval { get; set; }     // 되풀이 수행 시의 주기 (예: 1시간 간격)
         public DayOfWeek? WeekDay { get; set; }     // 주별 수행 시의 요일
+
     }
 }
