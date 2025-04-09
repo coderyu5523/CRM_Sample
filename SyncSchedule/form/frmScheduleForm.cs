@@ -46,12 +46,6 @@ namespace SyncScheduleManager
             {
                 return;
             }
-            // db 객체에 값 대입
-            // dBConnInfo.proxyDbIp = "192.168.10.152";
-            // dBConnInfo.proxyDbId =  "erp";
-            // dBConnInfo.proxyDbPw =  "itsp@7735";
-            // dBConnInfo.proxyDbName = "smart_db";
-            // dBConnInfo.proxyDbPort ="1616";
 
             dBConnInfo.proxyDbIp = serverInfo.ServerIP;
             dBConnInfo.proxyDbId = serverInfo.dbid;
@@ -101,19 +95,15 @@ namespace SyncScheduleManager
 
 
                 {
-                    Debug.WriteLine("3");
 
                     DataTable dataTable = new DataTable();
-                    Debug.WriteLine("4");
 
                     adapter.Fill(dataTable);
-                    Debug.WriteLine("5");
 
                     this.SourceDB.DataSource = dataTable;
                     this.SourceDB.DisplayMember = "co_cd";
                     this.SourceDB.ValueMember = "co_cd";
 
-                    Debug.WriteLine("6");
 
                     this.TargetDB.DataSource = dataTable;
                     this.TargetDB.DisplayMember = "co_cd";
@@ -123,11 +113,6 @@ namespace SyncScheduleManager
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("7");
-                Debug.WriteLine("오류 메시지: " + ex.Message);
-                Debug.WriteLine("스택 트레이스: " + ex.StackTrace);
-
-
                 // 예외 처리
                 Console.WriteLine($"데이터를 로드하는 중 오류 발생: {ex.Message}");
                 MessageBox.Show("데이터를 불러오는 중 오류가 발생했습니다. 관리자에게 문의하세요.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -316,89 +301,89 @@ namespace SyncScheduleManager
         private void dgvTasks_DefaultValuesNeeded(object sender, DataGridViewRowEventArgs e)
         {
 
-            // 파일에 저장된 TaskID 중 가장 큰 값을 확인
-            //   int maxStoredTaskId = GetMaxStoredTaskId();
-            //
-            //   // 2. 현재 그리드에 있는 TaskID 중 가장 큰 값 확인
-            //   int maxTaskIdInGrid = maxStoredTaskId; // 기본값은 파일에 저장된 최대 TaskID
-            //   if (maxStoredTaskId > 0)
-            //   {
-            //       foreach (DataGridViewRow row in dgvTasks.Rows)
-            //       {
-            //           if (row.IsNewRow) continue; // 새 행은 무시
-            //
-            //           // TaskID가 있는 경우 확인
-            //           if (row.Cells[0].Value != null && int.TryParse(row.Cells[0].Value.ToString(), out int taskId))
-            //           {
-            //               if (taskId > maxTaskIdInGrid)
-            //               {
-            //                   maxTaskIdInGrid = taskId; // 현재 가장 큰 TaskID 업데이트
-            //               }
-            //           }
-            //       }
-            //   }
-            //   // 새로운 행에 저장된 TaskID보다 1 큰 값을 할당
-            //   e.Row.Cells[0].Value = maxTaskIdInGrid + 1;
-            //
-            //   // nextTaskId 값을 업데이트
-            //   nextTaskId = maxTaskIdInGrid + 2; // 다음 TaskID로 설정
+             //파일에 저장된 TaskID 중 가장 큰 값을 확인
+               int maxStoredTaskId = GetMaxStoredTaskId();
+            
+               // 2. 현재 그리드에 있는 TaskID 중 가장 큰 값 확인
+               int maxTaskIdInGrid = maxStoredTaskId; // 기본값은 파일에 저장된 최대 TaskID
+               if (maxStoredTaskId > 0)
+               {
+                   foreach (DataGridViewRow row in dgvTasks.Rows)
+                   {
+                       if (row.IsNewRow) continue; // 새 행은 무시
+            
+                       // TaskID가 있는 경우 확인
+                       if (row.Cells[0].Value != null && int.TryParse(row.Cells[0].Value.ToString(), out int taskId))
+                       {
+                           if (taskId > maxTaskIdInGrid)
+                           {
+                               maxTaskIdInGrid = taskId; // 현재 가장 큰 TaskID 업데이트
+                           }
+                       }
+                   }
+               }
+               // 새로운 행에 저장된 TaskID보다 1 큰 값을 할당
+               e.Row.Cells[0].Value = maxTaskIdInGrid + 1;
+            
+               // nextTaskId 값을 업데이트
+               nextTaskId = maxTaskIdInGrid + 2; // 다음 TaskID로 설정
         }
         // 파일에 저장된 TaskID 중 가장 큰 값을 반환하는 메서드
-        //private int GetMaxStoredTaskId()
-        //{
-        //    int maxTaskId = 0;
-        //    var storedTasks = TaskFileManager.LoadTasks();
-        //    if (storedTasks.Count == 0)
-        //    {
-        //        return 0;
-        //    }
-        //    else
-        //    {
-        //        maxTaskId = storedTasks.Max(t => t.TaskId); // 가장 큰 TaskID 찾기 
-        //   
-        //        return maxTaskId; // 가장 큰 TaskID 반환 (없으면 0 반환)
-        //    }
-        //}
+        private int GetMaxStoredTaskId()
+        {
+            int maxTaskId = 0;
+            var storedTasks = TaskFileManager.LoadTasks();
+            if (storedTasks.Count == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                maxTaskId = storedTasks.Max(t => t.TaskId); // 가장 큰 TaskID 찾기 
+           
+                return maxTaskId; // 가장 큰 TaskID 반환 (없으면 0 반환)
+            }
+        }
 
         private void btnSaveTasks_Click(object sender, EventArgs e)
         {
-            //    tasks.Clear(); // 기존 리스트 비우기
-            //   
-            //    // DataGridView의 모든 행을 List<SyncTask>로 변환
-            //    foreach (DataGridViewRow row in dgvTasks.Rows)
-            //    {
-            //        if (row.IsNewRow) continue; // 새 행은 무시
-            //   
-            //   
-            //        // 필수값 체크 (각 셀에 값이 있는지 확인)
-            //        if (row.Cells[0].Value == null || row.Cells[1].Value == null ||
-            //            row.Cells[2].Value == null || row.Cells[3].Value == null ||
-            //            row.Cells[4].Value == null || row.Cells[5].Value == null ||
-            //            row.Cells[6].Value == null)
-            //        {
-            //            MessageBox.Show("모든 필수값을 입력하세요.", "필수값 누락", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //            return; // 필수값이 누락되면 저장 중단
-            //        }
-            //   
-            //        SyncTask task = new SyncTask
-            //        {
-            //            TaskId = Convert.ToInt32(row.Cells[0].Value), // TaskId
-            //            TaskName = row.Cells[1].Value?.ToString(), // TaskName
-            //            ReferenceTables = new List<string>(row.Cells[4].Value?.ToString().Split(',')), // 참조 테이블 목록
-            //            ProcedureName = row.Cells[5].Value?.ToString(), // ProcedureName                    
-            //            SourceDB = row.Cells[2].Value?.ToString(), // 원본 DB
-            //            TargetDB = row.Cells[3].Value?.ToString(), // 원본 DB
-            //            SyncDirection = row.Cells[6].Value?.ToString(), // 동기화 방향
-            //            IsActive = Convert.ToBoolean(row.Cells[7].Value?.ToString())
-            //        };
-            //   
-            //        tasks.Add(task); // 리스트에 추가
-            //    }
-            //   
-            //    // List<SyncTask>를 파일에 저장
-            //    TaskFileManager.SaveTasks(tasks);
-            //    //MessageBox.Show("작업이 저장되었습니다.");
-            //    toolStripStatusLabel1.Text = $"작업이 저장되었습니다.";
+                tasks.Clear(); // 기존 리스트 비우기
+               
+                // DataGridView의 모든 행을 List<SyncTask>로 변환
+                foreach (DataGridViewRow row in dgvTasks.Rows)
+                {
+                    if (row.IsNewRow) continue; // 새 행은 무시
+               
+               
+                    // 필수값 체크 (각 셀에 값이 있는지 확인)
+                    if (row.Cells[0].Value == null || row.Cells[1].Value == null ||
+                        row.Cells[2].Value == null || row.Cells[3].Value == null ||
+                        row.Cells[4].Value == null || row.Cells[5].Value == null ||
+                        row.Cells[6].Value == null)
+                    {
+                        MessageBox.Show("모든 필수값을 입력하세요.", "필수값 누락", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return; // 필수값이 누락되면 저장 중단
+                    }
+               
+                    SyncTask task = new SyncTask
+                    {
+                        TaskId = Convert.ToInt32(row.Cells[0].Value), // TaskId
+                        TaskName = row.Cells[1].Value?.ToString(), // TaskName
+                        ReferenceTables = new List<string>(row.Cells[4].Value?.ToString().Split(',')), // 참조 테이블 목록
+                        ProcedureName = row.Cells[5].Value?.ToString(), // ProcedureName                    
+                        SourceDB = row.Cells[2].Value?.ToString(), // 원본 DB
+                        TargetDB = row.Cells[3].Value?.ToString(), // 원본 DB
+                        SyncDirection = row.Cells[6].Value?.ToString(), // 동기화 방향
+                        IsActive = Convert.ToBoolean(row.Cells[7].Value?.ToString())
+                    };
+               
+                    tasks.Add(task); // 리스트에 추가
+                }
+               
+                // List<SyncTask>를 파일에 저장
+                TaskFileManager.SaveTasks(tasks);
+                //MessageBox.Show("작업이 저장되었습니다.");
+                toolStripStatusLabel1.Text = $"작업이 저장되었습니다.";
         }
 
 
@@ -498,7 +483,14 @@ namespace SyncScheduleManager
             }
             else
             {
-                lblTaskId.Text = "";
+                // 클릭된 행의 TaskId 값 가져오기
+                DataGridViewRow selectedRow = dgvTasks.Rows[e.RowIndex];
+
+                // TaskId 값이 있는지 확인하고, lblTaskID.Text에 할당
+                if (selectedRow.Cells[0].Value != null)
+                {
+                    lblTaskId.Text = selectedRow.Cells[0].Value.ToString(); // TaskId를 Label에 표시
+                }
             }
         }
         private void dgvrow_change(int rowindex)
@@ -513,18 +505,7 @@ namespace SyncScheduleManager
                 LoadSchedule(int.Parse(lblTaskId.Text));
             }
         }
-        private void dgvTasks_RowEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            // 클릭된 셀이 유효한지 확인 (행 인덱스가 0 이상인 경우)
-            if (e.RowIndex >= 0 && e.ColumnIndex <= 1)
-            {
-                dgvrow_change(e.RowIndex);
-            }
-            else
-            {
-                lblTaskId.Text = "";
-            }
-        }
+
 
         private void cboScheduleType1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -578,46 +559,59 @@ namespace SyncScheduleManager
         {
 
 
-            //DbConnectionInfoProvider dbConnectionInfoProvider = new DbConnectionInfoProvider(source_db, dBConnInfo);
-            //
-            //DbConnectionInfoProvider dbConnectionInfoProvider_target = new DbConnectionInfoProvider(target_db, dBConnInfo);
-            //
-            //DatabaseValidator validator = new DatabaseValidator(dbConnectionInfoProvider.LocalServer());
-            //if (tableName != "")
-            //{
-            //    // 테이블 존재 여부와 PK 확인
-            //    bool isTableValid = validator.TableExistsAndHasPrimaryKey(tableName);
-            //    if (!isTableValid)
-            //    {
-            //        MessageBox.Show("입력한 테이블이 존재하지 않거나 Primary Key가 없습니다.");
-            //        return false;
-            //    }
-            //}
-            //
-            //DatabaseValidator validator2 = new DatabaseValidator(dbConnectionInfoProvider.LocalServer());
-            //if (tableName != "")
-            //{
-            //    // 테이블 존재 여부와 PK 확인
-            //    bool isTableValid = validator2.TableExistsAndHasPrimaryKey(tableName);
-            //    if (!isTableValid)
-            //    {
-            //        MessageBox.Show("입력한 테이블이 존재하지 않거나 Primary Key가 없습니다.");
-            //        return false;
-            //    }
-            //}
-            //
-            //if (procedureName != "")
-            //{
-            //    // 프로시저 존재 여부 확인
-            //    bool isProcedureValid = validator.ProcedureExists(procedureName, dbConnectionInfoProvider_target.LocalServer());
-            //    if (!isProcedureValid)
-            //    {
-            //        MessageBox.Show("입력한 프로시저가 존재하지 않습니다.");
-            //        return false;
-            //    }
-            //}
-            ////MessageBox.Show("테이블과 프로시저가 유효합니다.");
+            DBConnectionInfoProvider dbConnectionInfoProvider = new DBConnectionInfoProvider(source_db, dBConnInfo);
+
+            DBConnectionInfoProvider dbConnectionInfoProvider_target = new DBConnectionInfoProvider(target_db, dBConnInfo);
+            
+            DatabaseValidator validator = new DatabaseValidator(dbConnectionInfoProvider.LocalServer());
+            if (tableName != "")
+            {
+                // 테이블 존재 여부와 PK 확인
+                bool isTableValid = validator.TableExistsAndHasPrimaryKey(tableName);
+                if (!isTableValid)
+                {
+                    MessageBox.Show("입력한 테이블이 존재하지 않거나 Primary Key가 없습니다.");
+                    return false;
+                }
+            }
+            
+            DatabaseValidator validator2 = new DatabaseValidator(dbConnectionInfoProvider.LocalServer());
+            if (tableName != "")
+            {
+                // 테이블 존재 여부와 PK 확인
+                bool isTableValid = validator2.TableExistsAndHasPrimaryKey(tableName);
+                if (!isTableValid)
+                {
+                    MessageBox.Show("입력한 테이블이 존재하지 않거나 Primary Key가 없습니다.");
+                    return false;
+                }
+            }
+            
+            if (procedureName != "")
+            {
+                // 프로시저 존재 여부 확인
+                bool isProcedureValid = validator.ProcedureExists(procedureName, dbConnectionInfoProvider_target.LocalServer());
+                if (!isProcedureValid)
+                {
+                    MessageBox.Show("입력한 프로시저가 존재하지 않습니다.");
+                    return false;
+                }
+            }
+            //MessageBox.Show("테이블과 프로시저가 유효합니다.");
             return true;
+        }
+
+        private void dgvTasks_RowEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            // 클릭된 셀이 유효한지 확인 (행 인덱스가 0 이상인 경우)
+            if (e.RowIndex >= 0 && e.ColumnIndex <= 1)
+            {
+                dgvrow_change(e.RowIndex);
+            }
+            else
+            {
+                lblTaskId.Text = "";
+            }
         }
 
         private void dgvTasks_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -627,9 +621,6 @@ namespace SyncScheduleManager
 
             // 현재 변경된 셀이 있는 열의 이름을 가져옴
             string columnName = dgvTasks.Columns[e.ColumnIndex].Name;
-
-            //string source_db = dgvTasks.Rows[e.RowIndex].Cells[2].Value.ToString();
-            //string target_db = dgvTasks.Rows[e.RowIndex].Cells[3].Value.ToString();
 
             string source_db = dgvTasks.Rows[e.RowIndex].Cells[2]?.Value?.ToString() ?? "";
             string target_db = dgvTasks.Rows[e.RowIndex].Cells[3]?.Value?.ToString() ?? "";
@@ -667,8 +658,6 @@ namespace SyncScheduleManager
                 {
                     dgvTasks.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = null;
                 }
-                // 여기서 원하는 로직 처리 (예: 유효성 검사, DB 반영 등)
-                //MessageBox.Show($"{columnName} 값이 변경되었습니다: {newValue}");
             }
         }
 

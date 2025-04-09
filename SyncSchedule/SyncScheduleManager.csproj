@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="class\ScheduleFileManager.cs" />
     <Compile Include="class\SyncJob.cs" />
+    <Compile Include="DatabaseValidator.cs" />
     <Compile Include="object\CombinedTaskSchedule.cs" />
     <Compile Include="object\SyncSchedule.cs" />
     <Compile Include="object\SyncTask.cs" />
