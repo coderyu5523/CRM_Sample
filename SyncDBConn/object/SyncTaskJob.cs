@@ -11,6 +11,8 @@ namespace SyncDBConn
         public int taskId { get; set; }
         public string taskName { get; set; }
         public List<string> referenceTables { get; set; }
+
+        public string targetTable { get; set; } // 타겟 테이블
         public string procedureName { get; set; }
         public string sourceDB { get; set; }
         public string targetDB { get; set; }

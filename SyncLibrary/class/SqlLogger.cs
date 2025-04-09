@@ -55,8 +55,42 @@ namespace SyncLibrary
         }
         public void LogError(string message, string sqlQuery = null)
         {
-            // 로그 레벨을 Error로 설정하여 로그 기록
-            Log(LogLevel.Error, new EventId(), message, null, (state, exception) => state.ToString());
+            using(SqlConnection connection = new SqlConnection(_connectionString)) 
+            {
+                try
+                {
+                    connection.Open();
+                    string logCommand = "INSERT INTO ErrorLog (ErrorMessage, ErrorDate, SqlQuery) VALUES (@ErrorMessage, GETDATE(), @SqlQuery)";
+                    using (SqlCommand command = new SqlCommand(logCommand, connection))
+                    {
+                        command.Parameters.AddWithValue("@ErrorMessage", message);
+                        command.Parameters.AddWithValue("@SqlQuery", sqlQuery ?? (object)DBNull.Value);
+                        command.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to log error: {ex.Message}");
+                }
+            }
         }   
     }
+    public class SqlLoggerProvider : ILoggerProvider
+    {
+        private readonly DBConnectionInfoProvider _dBConnectionInfoProvider;
+        public SqlLoggerProvider(DBConnectionInfoProvider dBConnectionInfoProvider)
+        {
+            _dBConnectionInfoProvider = dBConnectionInfoProvider;
+        }
+        public ILogger CreateLogger(string categoryName)
+        {
+            return new SqlLogger(_dBConnectionInfoProvider);
+        }
+        public void Dispose()
+        {
+            // 리소스 해제 로직
+        }
+    }
+
+
 }

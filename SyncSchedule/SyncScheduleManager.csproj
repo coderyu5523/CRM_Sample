@@ -137,6 +137,10 @@
       <Project>{3d5de7ba-f0c8-4c13-938f-31be29181ed8}</Project>
       <Name>SyncDBConn</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SyncLibrary\SyncLibrary.csproj">
+      <Project>{8AC6BE1F-B411-41A7-A5E2-800C20827C5D}</Project>
+      <Name>SyncLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -13,6 +13,7 @@ using SyncCRMData.SyncMonitoring;
 using Quartz.Impl.Matchers;
 using SyncCRMData;
 using SyncScheduleManager;
+using SyncSchedule;
 
 
 namespace CRM_Test3

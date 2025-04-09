@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="class\DBConnectionInfoProvider.cs" />
+    <Compile Include="class\XmlToSQLScript.cs" />
     <Compile Include="object\DBConnInfo.cs" />
     <Compile Include="object\ProxyServerInfo.cs" />
     <Compile Include="class\ProxyServerInfoManager.cs" />
