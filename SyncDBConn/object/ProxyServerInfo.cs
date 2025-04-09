@@ -8,10 +8,12 @@ namespace SyncDBConn
 {
     public class ProxyServerInfo
     {
-        public string serverIp { get; set; }  // DB 아이피
-        public string dbId { get; set; }     // DB 아이디
-        public string dbPw { get; set; }     // DB 비밀번호
-        public string dbName { get; set; } // DB 이름
-        public string dbPort { get; set; } // 접근 포트
+        public string ServerIP { get; set; }                  // DB서버아이피
+        public string dbid { get; set; }             // db id
+
+        public string dbpwd { get; set; }          // db pwd
+        public string dbname { get; set; }        // db명
+        public string dbport { get; set; }             // 접근포트
+
     }
 }

@@ -63,14 +63,14 @@ namespace SyncDBConn
                 serverInfo = JsonSerializer.Deserialize<ProxyServerInfo>(exsistingJson);
             }
 
-            var exsistingServerInfo = serverInfos.FirstOrDefault(s => s.serverIp == serverInfo.serverIp);
+            var exsistingServerInfo = serverInfos.FirstOrDefault(s => s.ServerIP == serverInfo.ServerIP);
 
             if (exsistingServerInfo != null)
             {
-                exsistingServerInfo.dbId = serverInfo.dbId;
-                exsistingServerInfo.dbPw = serverInfo.dbPw;
-                exsistingServerInfo.dbName = serverInfo.dbName;
-                exsistingServerInfo.dbPort = serverInfo.dbPort;
+                exsistingServerInfo.dbid = serverInfo.dbid;
+                exsistingServerInfo.dbpwd = serverInfo.dbpwd;
+                exsistingServerInfo.dbname = serverInfo.dbname;
+                exsistingServerInfo.dbname = serverInfo.dbport;
             }
             else
             {

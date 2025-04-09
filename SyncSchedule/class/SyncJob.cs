@@ -76,11 +76,11 @@ namespace SyncSchedule
                     return;
                 }
 
-                dBConnInfo.proxyDbIp = serverInfo.serverIp;
-                dBConnInfo.proxyDbId = serverInfo.dbId;
-                dBConnInfo.proxyDbPw = serverInfo.dbPw;
-                dBConnInfo.proxyDbName = serverInfo.dbName;
-                dBConnInfo.proxyDbPort = serverInfo.dbPort;
+                dBConnInfo.proxyDbIp = serverInfo.ServerIP;
+                dBConnInfo.proxyDbId = serverInfo.dbid;
+                dBConnInfo.proxyDbPw = serverInfo.dbpwd;
+                dBConnInfo.proxyDbName = serverInfo.dbname;
+                dBConnInfo.proxyDbPort = serverInfo.dbport;
 
                 DBConnectionInfoProvider dbConnectionInfoProvider = new DBConnectionInfoProvider(syncTaskJob.sourceDB, dBConnInfo);
                 SqlLogger _logger = new SqlLogger(dbConnectionInfoProvider);

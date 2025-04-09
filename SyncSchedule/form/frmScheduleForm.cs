@@ -47,23 +47,25 @@ namespace SyncScheduleManager
                 return;
             }
             // db 객체에 값 대입
-            dBConnInfo.proxyDbIp = "192.168.10.152";
-            dBConnInfo.proxyDbId =  "erp";
-            dBConnInfo.proxyDbPw =  "itsp@7735";
-            dBConnInfo.proxyDbName = "smart_db";
-            dBConnInfo.proxyDbPort ="1616";
+            // dBConnInfo.proxyDbIp = "192.168.10.152";
+            // dBConnInfo.proxyDbId =  "erp";
+            // dBConnInfo.proxyDbPw =  "itsp@7735";
+            // dBConnInfo.proxyDbName = "smart_db";
+            // dBConnInfo.proxyDbPort ="1616";
 
-            //dBConnInfo.proxyDbIp = serverInfo.serverIp;
-            //dBConnInfo.proxyDbId = serverInfo.dbId;
-            //dBConnInfo.proxyDbPw = serverInfo.dbPw;
-            //dBConnInfo.proxyDbName = serverInfo.dbName;
-            //dBConnInfo.proxyDbPort = serverInfo.dbPort;
-
+            dBConnInfo.proxyDbIp = serverInfo.ServerIP;
+            dBConnInfo.proxyDbId = serverInfo.dbid;
+            dBConnInfo.proxyDbPw = serverInfo.dbpwd;
+            dBConnInfo.proxyDbName = serverInfo.dbname;
+            dBConnInfo.proxyDbPort = serverInfo.dbport;
 
 
             GetComboBoxData();
 
+
             this.WindowState = FormWindowState.Maximized; // 폼 최대화
+
+            this.dgvTasks.AutoGenerateColumns = false; // 자동으로 컬럼 생성 안 함
             this.dgvTasks.AllowUserToAddRows = true; // 사용자 행 추가
             this.dgvTasks.AllowUserToDeleteRows = true; // 사용자 행 삭제
 
@@ -88,19 +90,15 @@ namespace SyncScheduleManager
         {
             try
             {
-                Debug.WriteLine("1");
 
                 //KR, CRM 조회 
-                string query = "SELECT co_cd, co_cd FROM CRMConninfoTable";
-                Debug.WriteLine("2");
-                //Debug.WriteLine(dBConnInfo.GetProxyConnectionString(dBConnInfo.proxyDbIp, dBConnInfo.proxyDbId, dBConnInfo.proxyDbPw, dBConnInfo.proxyDbName, dBConnInfo.proxyDbPort));
+                string query = "SELECT  co_cd, co_cd FROM CRMConninfoTable";
                 Debug.WriteLine(dBConnInfo.GetProxyConnectionString());
 
-                // DB 연결 객체 셍성
                 using (SqlConnection connection = new SqlConnection(dBConnInfo.GetProxyConnectionString()))
-                // SQL 실행
                 using (SqlCommand command = new SqlCommand(query, connection))
                 using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+
 
                 {
                     Debug.WriteLine("3");
@@ -147,11 +145,11 @@ namespace SyncScheduleManager
             }
             if(serverInfo != null)
             {
-                txtdbip.Text = serverInfo.serverIp;
-                txtdbid.Text = serverInfo.dbId;
-                txtdbpwd.Text = serverInfo.dbPw;
-                txtdbnm.Text = serverInfo.dbName;
-                txtdbport.Text = serverInfo.dbPort;
+                txtdbip.Text = serverInfo.ServerIP;
+                txtdbid.Text = serverInfo.dbid;
+                txtdbpwd.Text = serverInfo.dbpwd;
+                txtdbnm.Text = serverInfo.dbname;
+                txtdbport.Text = serverInfo.dbport;
             }
 
 
@@ -275,11 +273,11 @@ namespace SyncScheduleManager
             string dbnm = txtdbnm.Text;
             string dbport = txtdbport.Text;
             ProxyServerInfo serverInfo = new ProxyServerInfo();
-            serverInfo.serverIp = dbip;
-            serverInfo.dbId = dbid;
-            serverInfo.dbPw = dbpwd;
-            serverInfo.dbName = dbnm;
-            serverInfo.dbPort = dbport;
+            serverInfo.ServerIP = dbip;
+            serverInfo.dbid = dbid;
+            serverInfo.dbpwd = dbpwd;
+            serverInfo.dbname = dbnm;
+            serverInfo.dbport = dbport;
 
             if (TestDatabaseConnection(serverInfo))
             {
@@ -295,7 +293,7 @@ namespace SyncScheduleManager
         // DB 연결 테스트
         private bool TestDatabaseConnection(ProxyServerInfo serverInfo)
         {
-            string connectionString = $"Server={serverInfo.serverIp},{serverInfo.dbPort};Database={serverInfo.dbName};User Id={serverInfo.dbId};Password={serverInfo.dbPw};";
+            string connectionString = $"Server={serverInfo.ServerIP},{serverInfo.dbport};Database={serverInfo.dbname};User Id={serverInfo.dbid};Password={serverInfo.dbpwd};";
 
             try
             {
