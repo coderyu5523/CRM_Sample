@@ -91,6 +91,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="class\LogManager.cs" />
+    <Compile Include="class\MyJobListener.cs" />
     <Compile Include="class\ScheduleStats.cs" />
     <Compile Include="form\frmSyncCRMData.cs">
       <SubType>Form</SubType>

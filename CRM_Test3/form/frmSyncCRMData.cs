@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SyncCRMData.SyncMonitoring;
 using Quartz.Impl.Matchers;
+using SyncCRMData;
+using SyncScheduleManager;
 
 
 namespace CRM_Test3
@@ -62,7 +64,7 @@ namespace CRM_Test3
         
         
         
-            var combinedTaskSchedules = TaskScheduleManger.CombineTaskAndSchedule(); // Task에 매칭되는 Schedule을 가져옴
+            var combinedTaskSchedules = TaskScheduleManager.CombineTaskAndSchedule(); // Task에 매칭되는 Schedule을 가져옴
         
         
             foreach (var combined in combinedTaskSchedules)
@@ -174,7 +176,7 @@ namespace CRM_Test3
             // JobKey로 특정 Task를 식별
             JobKey jobKey = new JobKey($"job_{taskId}", "group1");
 
-            var combinedTaskSchedules = TaskScheduleManger.CombineTaskAndSchedule();
+            var combinedTaskSchedules = TaskScheduleManager.CombineTaskAndSchedule();
          
             // Find the specific task based on TaskId
             var task = combinedTaskSchedules.FirstOrDefault(t => t.Task.TaskId == taskId);
