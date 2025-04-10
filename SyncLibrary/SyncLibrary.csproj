@@ -71,6 +71,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="class\BaseDataSyncProcessor.cs" />
+    <Compile Include="class\DataSyncLogProcessor_Bidirection.cs" />
+    <Compile Include="class\DataSyncLogProcessor_Unidirection.cs" />
     <Compile Include="class\DataSyncLogProcessor_Update.cs" />
     <Compile Include="class\SqlLogger.cs" />
     <Compile Include="class\SyncManager.cs" />

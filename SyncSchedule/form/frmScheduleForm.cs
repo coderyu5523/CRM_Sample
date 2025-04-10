@@ -397,8 +397,11 @@ namespace SyncScheduleManager
 
         private void SaveSchedule(SyncSchedule schedule)
         {
+            Console.WriteLine("1010");
 
             ScheduleFileManager.SaveSchedule(schedule);
+            Console.WriteLine("1212");
+
             // 스케줄 데이터를 저장하는 로직 (파일 또는 데이터베이스)
             //MessageBox.Show($"Task 스케줄이 저장되었습니다: {schedule.ScheduleType}");
             toolStripStatusLabel1.Text = $"Task 스케줄이 저장되었습니다: {schedule.TaskId} 번 ";
@@ -406,16 +409,28 @@ namespace SyncScheduleManager
 
         private void btnSave1_Click(object sender, EventArgs e)
         {
-
+            Console.WriteLine("111");
             string selectedType = cboScheduleType1.SelectedItem.ToString();
+            Console.WriteLine("222");
+
             SyncSchedule schedule = new SyncSchedule();
+            Console.WriteLine("333");
+
             schedule.TaskId = int.Parse(lblTaskId.Text);
+            Console.WriteLine("444");
+
             if (schedule.TaskId <= 0)
             {
+                Console.WriteLine("555");
+
                 MessageBox.Show("TaskId가 선택되지 않았습니다. 다시 확인 후 저장하세요.");
                 return;
             }
+            Console.WriteLine("666");
+
             schedule.SrtDate = dtsrtdt.Value.ToShortDateString();
+            Console.WriteLine("777");
+
             switch (selectedType)
             {
                 //case "한 번 수행":
@@ -436,6 +451,8 @@ namespace SyncScheduleManager
                     //    schedule.SpecificTime = dtpSpecificTime.Value;
                     //    break;
             }
+
+            Console.WriteLine("999");
 
             // schedule 데이터를 파일이나 DB에 저장하는 로직 추가
             SaveSchedule(schedule);

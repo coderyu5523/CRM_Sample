@@ -17,13 +17,24 @@ namespace SyncScheduleManager
         // SyncTask 데이터를 파일로 저장하는 메서드
         public static void SaveTask(SyncTask task)
         {
+            Console.WriteLine("1");
             List<SyncTask> tasks = new List<SyncTask>();
+            Console.WriteLine("2");
+
 
             // 파일이 존재하면 기존 파일 읽어오기
             if (File.Exists(taskFilePath))
             {
+                Console.WriteLine("3");
+
                 var existingJson = File.ReadAllText(taskFilePath);
+
+                Console.WriteLine("4");
+
                 tasks = JsonSerializer.Deserialize<List<SyncTask>>(existingJson);
+
+                Console.WriteLine("5");
+
             }
 
             // 기존 TaskId와 동일한 Task가 있는지 확인

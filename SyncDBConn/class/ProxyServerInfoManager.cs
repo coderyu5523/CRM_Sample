@@ -60,7 +60,8 @@ namespace SyncDBConn
             {
                 var exsistingJson = File.ReadAllText(filePath);
 
-                serverInfo = JsonSerializer.Deserialize<ProxyServerInfo>(exsistingJson);
+                serverInfos = JsonSerializer.Deserialize<List<ProxyServerInfo>>(exsistingJson);
+
             }
 
             var exsistingServerInfo = serverInfos.FirstOrDefault(s => s.ServerIP == serverInfo.ServerIP);

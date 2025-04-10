@@ -13,7 +13,7 @@ namespace SyncDBConn
         public string proxyDbIp = "192.168.10.158";
         public string proxyDbId = "eis";
         public string proxyDbPw = "itsp@7735";
-        public string proxyDbName = "DIO_CRM";
+        public string proxyDbName = "DIO_TEST";
         public string proxyDbPort = "1616";
 
 
