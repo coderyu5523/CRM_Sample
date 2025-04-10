@@ -156,27 +156,35 @@ namespace SyncScheduleManager
         // 스케줄 불러오기 버튼 클릭 시 처리
         private void LoadSchedule(int taskId)
         {
-              SyncSchedule loadedSchedule = ScheduleFileManager.LoadSchedule(taskId);
-              if (loadedSchedule != null)
+
+            SyncSchedule loadedSchedule = ScheduleFileManager.LoadSchedule(taskId);
+
+
+            if (loadedSchedule != null)
               {
-                  // 불러온 스케줄 데이터를 폼에 적용
-                  cboScheduleType1.SelectedItem = GetScheduleTypeDisplayName(loadedSchedule.ScheduleType);
+                Console.WriteLine("12");
+
+                // 불러온 스케줄 데이터를 폼에 적용
+                cboScheduleType1.SelectedItem = GetScheduleTypeDisplayName(loadedSchedule.ScheduleType);
                   if (loadedSchedule.ScheduleType == "OneTime" || loadedSchedule.ScheduleType == "Daily")
                   {
-                      dtpSpecificTime1.Value = loadedSchedule.SpecificTime.Value;
+
+                    dtpSpecificTime1.Value = loadedSchedule.SpecificTime.Value;
                   }
                   else if (loadedSchedule.ScheduleType == "Recurring")
                   {
-                      numInterval1.Value = (decimal)loadedSchedule.Interval.Value.TotalMinutes;
+
+                    numInterval1.Value = (decimal)loadedSchedule.Interval.Value.TotalMinutes;
                   }
                   else if (loadedSchedule.ScheduleType == "Weekly")
                   {
-                      clbWeekDays.SetItemChecked((int)loadedSchedule.WeekDay.Value, true);
+
+                    clbWeekDays.SetItemChecked((int)loadedSchedule.WeekDay.Value, true);
                       dtpSpecificTime.Value = loadedSchedule.SpecificTime.Value;
                   }
-            
-                  //MessageBox.Show("Task-"+taskId.ToString()+"번 조회가 완료되었습니다.");
-                  toolStripStatusLabel1.Text = "Task-" + taskId.ToString() + "번 조회가 완료되었습니다.";
+
+                //MessageBox.Show("Task-"+taskId.ToString()+"번 조회가 완료되었습니다.");
+                toolStripStatusLabel1.Text = "Task-" + taskId.ToString() + "번 조회가 완료되었습니다.";
               }
               else
               {
