@@ -232,7 +232,7 @@ namespace SyncScheduleManager
                foreach (var task in tasks)
                {
                    dgvTasks.Rows.Add(task.TaskId, task.TaskName, task.SourceDB,              // 원본 DB
-                   task.TargetDB, string.Join(",", task.ReferenceTables), task.ProcedureName, task.SyncDirection, task.IsActive);
+                   task.TargetDB, string.Join(",", task.ReferenceTables),task.TargetTable ,task.ProcedureName, task.SyncDirection, task.IsActive);
                }
             
                // 불러온 Task 중 가장 큰 TaskID를 찾아서 nextTaskId 설정

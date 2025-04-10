@@ -74,16 +74,16 @@ namespace CRM_Test3
                 var schedule = combined.Schedule;  // 스케줄 객체 저장
         
                 JobKey jobKey = new JobKey($"job_{task.TaskId}", "group1"); // Task에 대한 JobKey 생성
-        
-                // 기존 작업 중에서 추가된 작업만 처리
-                if (existingJobKeys.Contains(jobKey))
+
+                // 기존에 동일한 JobKey가 있는지 확인
+                if (await scheduler.CheckExists(jobKey))
                 {
-                    Console.WriteLine($"Job {jobKey} 이미 존재합니다. 건너뜁니다.");
-                    continue; // 이미 존재하는 작업은 스킵
+                    Console.WriteLine($"Job {jobKey} 이미 존재합니다. 덮어쓰거나 건너뜁니다.");
+                    await scheduler.DeleteJob(jobKey); // 기존 Job을 삭제
                 }
-        
+
                 // Quartz.NET Job 생성
-                  IJobDetail job = JobBuilder.Create<SyncJob>()
+                IJobDetail job = JobBuilder.Create<SyncJob>()
                    .WithIdentity(jobKey)
                     .UsingJobData("TaskId", task.TaskId)
                     .UsingJobData("TaskName", task.TaskName)
