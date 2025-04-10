@@ -83,23 +83,32 @@ namespace CRM_Test3
                 }
         
                 // Quartz.NET Job 생성
-                IJobDetail job = JobBuilder.Create<SyncJob>()
+                  IJobDetail job = JobBuilder.Create<SyncJob>()
                    .WithIdentity(jobKey)
-                   .UsingJobData("TaskId", task.TaskId)
-                   .UsingJobData("TaskName", task.TaskName)
-                   .UsingJobData("ProcedureName", task.ProcedureName)
-                   .UsingJobData("SourceDB", task.SourceDB)
-                   .UsingJobData("TargetDB", task.TargetDB)
-                   .UsingJobData("ReferenceTables", string.Join(",", task.ReferenceTables))
-                   .UsingJobData("TargetTable", task.TargetTable)
-                   .UsingJobData("ProcedureName", task.ProcedureName)
-                   .UsingJobData("ScheduleType", schedule.ScheduleType)
-                   .UsingJobData("Interval", schedule.Interval?.ToString())
-                   .UsingJobData("SyncDirection", task.SyncDirection)
-                   .Build();
-        
-                TriggerKey triggerKey = new TriggerKey($"trigger_{task.TaskId}", "group1"); // Task에 대한 TriggerKey 생성
-        
+                    .UsingJobData("TaskId", task.TaskId)
+                    .UsingJobData("TaskName", task.TaskName)
+                    .UsingJobData("ProcedureName", task.ProcedureName)
+                    .UsingJobData("SourceDB", task.SourceDB)
+                    .UsingJobData("TargetDB", task.TargetDB)
+                    .UsingJobData("ReferenceTables", string.Join(",", task.ReferenceTables))
+                    .UsingJobData("TargetTable", task.TargetTable)
+                    .UsingJobData("ProcedureName", task.ProcedureName)
+                    .UsingJobData("ScheduleType", schedule.ScheduleType) // 스케줄 정보 추가
+                    .UsingJobData("Interval", schedule.Interval?.ToString()) // 스케줄 주기 추가
+                    .UsingJobData("SyncDirection", task.SyncDirection) // 스케줄 주기 추가
+                                                                             //.UsingJobData("SpecificTime", schedule.SpecificTime?.ToString()) // 특정 시간 추가
+                    .Build();
+
+                // TriggerKey 생성
+                TriggerKey triggerKey = new TriggerKey($"trigger_{task.TaskId}", "group1");
+
+                if (await scheduler.CheckExists(triggerKey))
+                {
+                    Console.WriteLine($"Trigger {triggerKey} 이미 존재합니다. 덮어쓰거나 건너뜁니다.");
+                }
+
+
+
                 // Trigger 생성
                 ITrigger trigger;
         

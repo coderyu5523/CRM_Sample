@@ -205,7 +205,7 @@ namespace SyncLibrary
                 {
                     connection.Open();
 
-                    string referenceTablesCondition = string.Join(",", _syncTaskJob.referenceTables.Select(table => $"'{table}'"));
+                    string referenceTablesCondition = string.Join(",", _syncTaskJob.ReferenceTables.Select(table => $"'{table}'"));
 
                     string query = $@"
                                     SELECT TOP (@BatchSize) LogId, TableName, ChangeType, ChangeDetails 

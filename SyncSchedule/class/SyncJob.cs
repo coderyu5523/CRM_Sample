@@ -21,7 +21,6 @@ namespace SyncSchedule
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("1111111111");
                 int taskId = context.MergedJobDataMap.GetInt("TaskId"); // 작업 ID
                 string taskName = context.MergedJobDataMap.GetString("TaskName");
                 string scheduleType = context.MergedJobDataMap.GetString("ScheduleType");
@@ -52,14 +51,14 @@ namespace SyncSchedule
                 var syncTaskJob = new SyncTaskJob
                 {
 
-                    taskId = context.MergedJobDataMap.GetInt("TaskId"),
-                    taskName = context.MergedJobDataMap.GetString("TaskName"),
-                    scheduleType = context.MergedJobDataMap.GetString("ScheduleType"),
-                    sourceDB = context.MergedJobDataMap.GetString("SourceDB"),
-                    targetDB = context.MergedJobDataMap.GetString("TargetDB"),
-                    syncDirection = context.MergedJobDataMap.GetString("SyncDirection"),
-                    procedureName = context.MergedJobDataMap.GetString("ProcedureName"),
-                    referenceTables = context.MergedJobDataMap.GetString("ReferenceTables").Split(',').ToList()
+                    TaskId = context.MergedJobDataMap.GetInt("TaskId"),
+                    TaskName = context.MergedJobDataMap.GetString("TaskName"),
+                    ScheduleType = context.MergedJobDataMap.GetString("ScheduleType"),
+                    SourceDB = context.MergedJobDataMap.GetString("SourceDB"),
+                    TargetDB = context.MergedJobDataMap.GetString("TargetDB"),
+                    SyncDirection = context.MergedJobDataMap.GetString("SyncDirection"),
+                    ProcedureName = context.MergedJobDataMap.GetString("ProcedureName"),
+                    ReferenceTables = context.MergedJobDataMap.GetString("ReferenceTables").Split(',').ToList()
                 };
 
                 // 작업 구분에 따라 적절한 DataSyncProcessor 선택 (예시)
@@ -82,7 +81,7 @@ namespace SyncSchedule
                 dBConnInfo.proxyDbName = serverInfo.dbname;
                 dBConnInfo.proxyDbPort = serverInfo.dbport;
 
-                DBConnectionInfoProvider dbConnectionInfoProvider = new DBConnectionInfoProvider(syncTaskJob.sourceDB, dBConnInfo);
+                DBConnectionInfoProvider dbConnectionInfoProvider = new DBConnectionInfoProvider(syncTaskJob.SourceDB, dBConnInfo);
                 SqlLogger _logger = new SqlLogger(dbConnectionInfoProvider);
 
 

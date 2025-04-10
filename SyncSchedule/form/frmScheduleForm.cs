@@ -162,7 +162,6 @@ namespace SyncScheduleManager
 
             if (loadedSchedule != null)
               {
-                Console.WriteLine("12");
 
                 // 불러온 스케줄 데이터를 폼에 적용
                 cboScheduleType1.SelectedItem = GetScheduleTypeDisplayName(loadedSchedule.ScheduleType);
@@ -464,22 +463,22 @@ namespace SyncScheduleManager
 
         private void dgvTasks_SelectionChanged_1(object sender, EventArgs e)
         {
-            //if (dgvTasks.SelectedRows.Count > 0) // 선택된 행이 있는지 확인
-            //{
-            //    // 선택된 행의 첫 번째 행의 TaskId 값 가져오기
-            //    DataGridViewRow selectedRow = dgvTasks.SelectedRows[0];
+            if (dgvTasks.SelectedRows.Count > 0) // 선택된 행이 있는지 확인
+            {
+                // 선택된 행의 첫 번째 행의 TaskId 값 가져오기
+                DataGridViewRow selectedRow = dgvTasks.SelectedRows[0];
 
-            //    // TaskId 값이 있는지 확인하고, lblTaskID.Text에 할당
-            //    if (selectedRow.Cells[0].Value != null)
-            //    {
-            //        lblTaskId.Text = selectedRow.Cells[0].Value.ToString(); // TaskId를 Label에 표시
-            //        LoadSchedule(int.Parse(lblTaskId.Text));
-            //    }
-            //}
-            //else
-            //{
-            //    lblTaskId.Text = "";
-            //}
+                // TaskId 값이 있는지 확인하고, lblTaskID.Text에 할당
+                if (selectedRow.Cells[0].Value != null)
+                {
+                    lblTaskId.Text = selectedRow.Cells[0].Value.ToString(); // TaskId를 Label에 표시
+                    LoadSchedule(int.Parse(lblTaskId.Text));
+                }
+            }
+            else
+            {
+                lblTaskId.Text = "";
+            }
         }
 
         private void dgvTasks_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -620,6 +619,11 @@ namespace SyncScheduleManager
             {
                 lblTaskId.Text = "";
             }
+        }
+
+        private void dgvTasks_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
 
         private void dgvTasks_CellValueChanged(object sender, DataGridViewCellEventArgs e)

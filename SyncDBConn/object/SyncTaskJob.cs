@@ -8,17 +8,17 @@ namespace SyncDBConn
 {
     public class SyncTaskJob
     {
-        public int taskId { get; set; }
-        public string taskName { get; set; }
-        public List<string> referenceTables { get; set; }
+        public int TaskId { get; set; }                  // 작업 단위 ID
+        public string TaskName { get; set; }             // 작업 단위 명칭
+        public List<string> ReferenceTables { get; set; } // 참조 테이블 목록 (여러 개일 수 있음)
+        public string TargetTable { get; set; }             // 작업 단위 명칭
+        public string ProcedureName { get; set; }        // 호출할 프로시저명
+        public string SourceDB { get; set; }             // 원본 DB
+        public string TargetDB { get; set; }             // 대상 DB
+        public string SyncDirection { get; set; }        // 동기화 방향 (DB1 -> DB2, DB2 -> DB1, 양방향)
+        public bool IsActive { get; set; }               // 작업 활성화 여부
 
-        public string targetTable { get; set; } // 타겟 테이블
-        public string procedureName { get; set; }
-        public string sourceDB { get; set; }
-        public string targetDB { get; set; }
-        public string syncDirection { get; set; } // 동기화 방향 S1,S2,S3
-        public bool isActive { get; set; } // 활성화 여부
-        public string scheduleType { get; set; } // 스케줄 타입
+        public string ScheduleType { get; set; }    // 스케줄 타입 (OneTime, Recurring, Daily, Weekly)
 
     }
 }

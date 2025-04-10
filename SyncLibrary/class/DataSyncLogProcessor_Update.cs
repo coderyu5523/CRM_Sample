@@ -31,12 +31,12 @@ namespace SyncLibrary
         {
             var table = "";
             // ReferenceTables 리스트에서 첫 번째 값 가져오기
-            if (_syncTaskJob.referenceTables != null && _syncTaskJob.referenceTables.Count > 0)
+            if (_syncTaskJob.ReferenceTables != null && _syncTaskJob.ReferenceTables.Count > 0)
             {
-                table = _syncTaskJob.referenceTables[0];
+                table = _syncTaskJob.ReferenceTables[0];
 
             }
-            _syncTaskJob.targetTable = table;
+            _syncTaskJob.TargetTable = table;
             DataTable sourceData = await LoadTableDataAsync(_dbConnectionInfoProvider.LocalServer(), table, false); // 원본 테이블의 전체 데이터 로드
             if (sourceData.Rows.Count == 0)
             {
@@ -48,7 +48,7 @@ namespace SyncLibrary
             try
             {
            
-                var(localConnectionString,remoteConnectionString) = _dbConnectionInfoProvider.GetConnectionInfo(_syncTaskJob.sourceDB,_syncTaskJob.targetDB);
+                var(localConnectionString,remoteConnectionString) = _dbConnectionInfoProvider.GetConnectionInfo(_syncTaskJob.SourceDB,_syncTaskJob.TargetDB);
 
                 // 대상 테이블에서 기존 데이터를 읽어옴
                 DataTable targetData = await LoadTableDataAsync(remoteConnectionString, table, true);
@@ -144,7 +144,7 @@ namespace SyncLibrary
             try
             {
                 // 임시 테이블명 설정
-                string tempTableName = _syncTaskJob.targetTable + "_Temp";
+                string tempTableName = _syncTaskJob.TargetTable + "_Temp";
                 using (SqlConnection connection = new SqlConnection(remoteConnectionString))
                 {
                     await connection.OpenAsync();
@@ -169,7 +169,7 @@ namespace SyncLibrary
                             await BulkInsertToTempTableAsync(connection, transaction, tempTableName, sourceData, 300000);
 
                             // 3. _Temp 테이블과 대상 테이블을 MERGE
-                            string mergeQuery = GenerateMergeQuery(tempTableName, _syncTaskJob.targetTable, fieldTypes, primaryKeys, excludedField: "intg_com,itrg_cdt,itrg_fdt");
+                            string mergeQuery = GenerateMergeQuery(tempTableName, _syncTaskJob.TargetTable, fieldTypes, primaryKeys, excludedField: "intg_com,itrg_cdt,itrg_fdt");
                             using (SqlCommand mergeCmd = new SqlCommand(mergeQuery, connection, transaction))
                             {
                                 // CommandTimeout 값을 600초(10분)로 설정 (필요에 따라 변경 가능)
@@ -187,8 +187,8 @@ namespace SyncLibrary
                         {
                             // 트랜잭션 롤백
                             transaction.Rollback();
-                            _logger.LogError($"Sync Table Merge {_syncTaskJob.targetTable}  SQL오류: {ex.Message}");
-                            Console.WriteLine($"Sync Table Merge {_syncTaskJob.targetTable} SQL오류: {ex.Message}");
+                            _logger.LogError($"Sync Table Merge {_syncTaskJob.TargetTable}  SQL오류: {ex.Message}");
+                            Console.WriteLine($"Sync Table Merge {_syncTaskJob.TargetTable} SQL오류: {ex.Message}");
                             //_logger.LogError($"SQL 오류 발생: {sqlEx.Message}", sqlEx.ToString());
                             throw;
                         }
@@ -453,7 +453,7 @@ namespace SyncLibrary
                 await bulkCopy.WriteToServerAsync(adjustedData);
             }
         }
-
+        
         private async Task BulkInsertToTempTableAsync(SqlConnection connection, SqlTransaction transaction, string tempTableName, DataTable sourceData, int chunkSize = 50000)
         {
             // DataTable을 청크 단위로 나눠서 처리
