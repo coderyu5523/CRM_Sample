@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 using SyncDBConn;
 
@@ -14,6 +13,7 @@ namespace SyncLibrary
 {
     public class DataSyncLogProcessor_Update : BaseDataSyncProcessor, IDataSyncProcessor
     {
+        // DB 연결 및 로그 작업을 위한 의존성 주입 객체
         private readonly DBConnectionInfoProvider _dbConnectionInfoProvider;
         private readonly SyncTaskJob _syncTaskJob;
         private readonly SqlLogger _logger;
@@ -27,16 +27,18 @@ namespace SyncLibrary
             _syncTaskJob = syncTaskJob;
         }
 
+        // 동기화 시작점
         public override async Task ProcessLogsAsync()
         {
             var table = "";
-            // ReferenceTables 리스트에서 첫 번째 값 가져오기
+            // ReferenceTables 리스트에서 테이블 첫 번째 값 가져오기
             if (_syncTaskJob.ReferenceTables != null && _syncTaskJob.ReferenceTables.Count > 0)
             {
                 table = _syncTaskJob.ReferenceTables[0];
 
             }
             _syncTaskJob.TargetTable = table;
+            // 원본 데이터 로딩
             DataTable sourceData = await LoadTableDataAsync(_dbConnectionInfoProvider.LocalServer(), table, false); // 원본 테이블의 전체 데이터 로드
             if (sourceData.Rows.Count == 0)
             {
@@ -61,7 +63,7 @@ namespace SyncLibrary
 
                 //원본테이블이 대상 테이블컬럼보다 많은 경우 컬럼 생성구문
                 AddMissingColumnsAsync(sourceData, targetData, table, remoteConnectionString);
-                // 원본 데이터와 대상 데이터를 비교하여 차이점만 처리
+                // 원본 데이터와 대상 데이터를 비교하여 차이점만 처리(Merge문)
                 bool success = await SyncTableDataWithUpsertAsync(sourceData, targetData, fieldTypes, primaryKeys, remoteConnectionString);
 
                 if (success)
@@ -88,6 +90,8 @@ namespace SyncLibrary
         /// <param name="targetTableName"></param>
         /// <param name="connectionString"></param>
         /// <returns></returns>
+
+        // 원본 테이블이  대상 테이블보다 많은 경우 컬럼 생성(ALTER 문)
         private async Task AddMissingColumnsAsync(DataTable sourceData, DataTable targetData, string targetTableName, string connectionString)
         {
             // SourceTable과 TargetTable의 컬럼 이름을 추출
@@ -104,6 +108,7 @@ namespace SyncLibrary
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
+                    // SQL SERVER와 비동기 연결 시작
                     await connection.OpenAsync();
                     using (SqlCommand command = new SqlCommand())
                     {
@@ -125,7 +130,7 @@ namespace SyncLibrary
                                 {
                                     columnType += $"({fieldType.Precision.Value}, {fieldType.Scale.Value})";
                                 }
-
+                                // ALTER문으로 컬럼 추가
                                 string alterTableQuery = $"ALTER TABLE {targetTableName} ADD {columnName} {columnType};";
                                 command.CommandText = alterTableQuery;
 
@@ -137,7 +142,9 @@ namespace SyncLibrary
                 }
             }
         }
+        // 동시에 실행할 수 있는 비동기 작업의 최대 수 설정. 나머지는 대기
         private static SemaphoreSlim semaphore = new SemaphoreSlim(3);
+
         // 원본 데이터와 대상 데이터를 비교하여 차이점만 처리하는 메서드 (Insert, Update, Delete)
         private async Task<bool> SyncTableDataWithUpsertAsync(DataTable sourceData, DataTable targetData, Dictionary<string, (string DataType, int? MaxLength, int? Precision, int? Scale)> fieldTypes, List<string> primaryKeys, string remoteConnectionString)
         {
@@ -147,11 +154,14 @@ namespace SyncLibrary
                 string tempTableName = _syncTaskJob.TargetTable + "_Temp";
                 using (SqlConnection connection = new SqlConnection(remoteConnectionString))
                 {
+                    // SQL SERVER와 비동기 연결 시작
                     await connection.OpenAsync();
+                    // 트랜잭션으로 묶음
                     using (SqlTransaction transaction = connection.BeginTransaction())
                     {
                         try
                         {
+                            // 테이블 있으면 삭제
                             string dropTempTableQuery = $"DROP TABLE IF EXISTS {tempTableName}";
                             using (SqlCommand dropCommand = new SqlCommand(dropTempTableQuery, connection, transaction))
                             {
@@ -169,7 +179,7 @@ namespace SyncLibrary
                             await BulkInsertToTempTableAsync(connection, transaction, tempTableName, sourceData, 300000);
 
                             // 3. _Temp 테이블과 대상 테이블을 MERGE
-                            string mergeQuery = GenerateMergeQuery(tempTableName, _syncTaskJob.TargetTable, fieldTypes, primaryKeys, excludedField: "intg_com,itrg_cdt,itrg_fdt");
+                            string mergeQuery = GenerateMergeQuery(tempTableName, _syncTaskJob.TargetTable, fieldTypes, primaryKeys, excludedField: ""); // merge 비교 대상에서 intg_com,itrg_cdt,itrg_fdt 이거는 제외
                             using (SqlCommand mergeCmd = new SqlCommand(mergeQuery, connection, transaction))
                             {
                                 // CommandTimeout 값을 600초(10분)로 설정 (필요에 따라 변경 가능)
@@ -225,7 +235,7 @@ namespace SyncLibrary
                 // 데이터 타입에 따라 크기나 정밀도 설정
                 if ((fieldType.StartsWith("varchar") || fieldType.StartsWith("nvarchar") || fieldType.StartsWith("char")) && maxLength.HasValue)
                 {
-                    fieldType += $"({maxLength.Value})"; // MaxLength 설정
+                    fieldType += $"({maxLength.Value})"; // MaxLength 설정intg_com,itrg_cdt,itrg_fdt
                 }
                 else if (fieldType == "decimal" && precision.HasValue && scale.HasValue)
                 {
@@ -285,7 +295,7 @@ namespace SyncLibrary
             mergeQuery.AppendLine($"USING {tempTableName} AS source");
             mergeQuery.AppendLine("ON");
 
-            // ON 절에 PRIMARY KEY 조건 추가
+            // ON 절에 PRIMARY KEY 조건 추가, PK 값이 일치하고, intg_com='1'인 경우
             var primaryKeyConditions = primaryKeys.Select(pk => $"target.{pk} = source.{pk}").ToList();
             mergeQuery.AppendLine(string.Join(" AND ", primaryKeyConditions));
             mergeQuery.AppendLine(string.Join(" AND intg_com='1'"));
@@ -293,24 +303,19 @@ namespace SyncLibrary
             mergeQuery.AppendLine("WHEN MATCHED THEN");
             mergeQuery.AppendLine("UPDATE SET");
 
-            //foreach (var field in fieldTypes.Keys.Where(f => !excludedFields.Contains(f) && f != "itrg_cdt"))
-            foreach (var field in fieldTypes.Keys.Where(f => !excludedFields.Contains(f) && f != "itrg_cdt" && f != "intg_com"))
+
+            foreach (var field in fieldTypes.Keys.Where(f => !excludedFields.Contains(f) && f != "itrg_cdt" && f != "intg_com")) 
             {
                 // 필드가 변경되었을 때만 업데이트
                 mergeQuery.AppendLine($"target.{field} = source.{field},");
             }
 
-            //mergeQuery.AppendLine("target.itrg_cdt =null,");
-
-            // intg_com 필드는 데이터가 변경된 경우에만 '1'로 업데이트
-            //mergeQuery.AppendLine("target.intg_com = null,");
-
 
             // itrg_cdt는 필드가 변경된 경우에만 GETDATE()로 업데이트
             mergeQuery.AppendLine("target.itrg_cdt = CASE WHEN ");
-            mergeQuery.AppendLine(string.Join(" OR ", fieldTypes.Keys
-                .Where(f => !excludedFields.Contains(f) && f != "itrg_cdt")
-                .Select(f => $"(target.{f} <> source.{f} OR (target.{f} IS NULL AND source.{f} IS NOT NULL) OR (target.{f} IS NOT NULL AND source.{f} IS NULL))")));
+            mergeQuery.AppendLine(string.Join(" OR ", fieldTypes.Keys // 필드명 가져옴
+                .Where(f => !excludedFields.Contains(f) && f != "itrg_cdt") // 제외할 필드가 아닌 것들
+                .Select(f => $"(target.{f} <> source.{f} OR (target.{f} IS NULL AND source.{f} IS NOT NULL) OR (target.{f} IS NOT NULL AND source.{f} IS NULL))"))); // 제외된 컬럼이 아닌 것 중 변경값 비교
             mergeQuery.AppendLine(" THEN GETDATE() ELSE target.itrg_cdt END,");
 
             // intg_com 필드는 데이터가 변경된 경우에 'null'로 업데이트
@@ -326,8 +331,11 @@ namespace SyncLibrary
             mergeQuery.Remove(mergeQuery.Length - 3, 1);
 
             // WHEN NOT MATCHED BY SOURCE THEN DELETE 절을 삭제하고, 'intg_com'을 'D'로 업데이트
-            mergeQuery.AppendLine("WHEN NOT MATCHED BY SOURCE THEN");
-            mergeQuery.AppendLine("UPDATE SET target.intg_com = 'D'");
+            // 1. 소스와 타켓 둘다 pk가 있는 경우 : WHEN MATCHED -> 업데이트
+            // 2. 소스에만 pk가 있는 경우 : WHEN NOT MATCHED BY TARGET -> INSERT
+            //3 . 타켓에만 pk가 있고 소스에는 없는 경우 : WHEN NOT MATCHED BY SOURCE -> DELETE
+            mergeQuery.AppendLine("WHEN NOT MATCHED BY SOURCE THEN"); // 소스에는 없고 타겟에만 있는 경우
+            mergeQuery.AppendLine("UPDATE SET target.intg_com = 'D'"); // D 플래그로 업데이트
 
             // WHEN NOT MATCHED THEN INSERT 절
             mergeQuery.AppendLine("WHEN NOT MATCHED THEN");
@@ -365,74 +373,74 @@ namespace SyncLibrary
             return mergeQuery.ToString();
         }
         // MERGE 쿼리 생성
-        private string GenerateMergeQuery_old(string tempTableName, string targetTableName, Dictionary<string, (string DataType, int? MaxLength, int? Precision, int? Scale)> fieldTypes, List<string> primaryKeys, string excludedField)
-        {
-            // 제외할 필드를 배열로 변환
-            var excludedFields = excludedField.Split(',').Select(f => f.Trim()).ToList();
-
-            // MERGE 쿼리 시작 부분 생성
-            StringBuilder mergeQuery = new StringBuilder();
-            mergeQuery.AppendLine($"MERGE INTO {targetTableName} AS target");
-            mergeQuery.AppendLine($"USING {tempTableName} AS source");
-            mergeQuery.AppendLine("ON");
-
-            // ON 절에 PRIMARY KEY 조건 추가
-            var primaryKeyConditions = primaryKeys.Select(pk => $"target.{pk} = source.{pk}").ToList();
-            mergeQuery.AppendLine(string.Join(" AND ", primaryKeyConditions));
-
-            // WHEN MATCHED THEN UPDATE 절
-            mergeQuery.AppendLine("WHEN MATCHED THEN");
-            mergeQuery.AppendLine("UPDATE SET");
-
-            foreach (var field in fieldTypes.Keys.Where(f => !excludedFields.Contains(f) && f != "itrg_cdt"))
-            {
-                // 필드가 변경되었을 때만 업데이트
-                mergeQuery.AppendLine($"target.{field} = source.{field},");
-            }
-
-            // itrg_cdt는 필드가 변경된 경우에만 GETDATE()로 업데이트
-            mergeQuery.AppendLine("target.itrg_cdt = CASE WHEN ");
-            mergeQuery.AppendLine(string.Join(" OR ", fieldTypes.Keys
-                .Where(f => !excludedFields.Contains(f) && f != "itrg_cdt")
-                .Select(f => $"(target.{f} <> source.{f} OR (target.{f} IS NULL AND source.{f} IS NOT NULL) OR (target.{f} IS NOT NULL AND source.{f} IS NULL))")));
-            mergeQuery.AppendLine(" THEN GETDATE() ELSE target.itrg_cdt END,");
-
-
-
-
-            // 마지막 ',' 제거
-            mergeQuery.Remove(mergeQuery.Length - 3, 1);
-
-            // WHEN NOT MATCHED THEN INSERT 절
-            mergeQuery.AppendLine("WHEN NOT MATCHED THEN");
-            mergeQuery.AppendLine("INSERT (");
-
-            // INSERT할 필드 목록
-            var insertFields = fieldTypes.Keys.ToList();
-            //.Where(f => !excludedFields.Contains(f)).ToList();
-            mergeQuery.AppendLine(string.Join(", ", insertFields));
-
-            mergeQuery.AppendLine(") VALUES (");
-
-            // INSERT할 값 목록
-            foreach (var field in insertFields)
-            {
-                if (field == "itrg_cdt")
-                {
-                    mergeQuery.AppendLine("GETDATE(),"); // 현재 시간
-                }
-                else
-                {
-                    mergeQuery.AppendLine($"source.{field},");
-                }
-            }
-
-            // 마지막 ',' 제거
-            mergeQuery.Remove(mergeQuery.Length - 3, 1);
-            mergeQuery.AppendLine(");");
-
-            return mergeQuery.ToString();
-        }
+      //  private string GenerateMergeQuery_old(string tempTableName, string targetTableName, Dictionary<string, (string DataType, int? MaxLength, int? Precision, int? Scale)> fieldTypes, List<string> primaryKeys, string excludedField)
+      //  {
+      //      // 제외할 필드를 배열로 변환
+      //      var excludedFields = excludedField.Split(',').Select(f => f.Trim()).ToList();
+      //
+      //      // MERGE 쿼리 시작 부분 생성
+      //      StringBuilder mergeQuery = new StringBuilder();
+      //      mergeQuery.AppendLine($"MERGE INTO {targetTableName} AS target");
+      //      mergeQuery.AppendLine($"USING {tempTableName} AS source");
+      //      mergeQuery.AppendLine("ON");
+      //
+      //      // ON 절에 PRIMARY KEY 조건 추가
+      //      var primaryKeyConditions = primaryKeys.Select(pk => $"target.{pk} = source.{pk}").ToList();
+      //      mergeQuery.AppendLine(string.Join(" AND ", primaryKeyConditions));
+      //
+      //      // WHEN MATCHED THEN UPDATE 절
+      //      mergeQuery.AppendLine("WHEN MATCHED THEN");
+      //      mergeQuery.AppendLine("UPDATE SET");
+      //
+      //      foreach (var field in fieldTypes.Keys.Where(f => !excludedFields.Contains(f) && f != "itrg_cdt"))
+      //      {
+      //          // 필드가 변경되었을 때만 업데이트
+      //          mergeQuery.AppendLine($"target.{field} = source.{field},");
+      //      }
+      //
+      //      // itrg_cdt는 필드가 변경된 경우에만 GETDATE()로 업데이트
+      //      mergeQuery.AppendLine("target.itrg_cdt = CASE WHEN ");
+      //      mergeQuery.AppendLine(string.Join(" OR ", fieldTypes.Keys
+      //          .Where(f => !excludedFields.Contains(f) && f != "itrg_cdt")
+      //          .Select(f => $"(target.{f} <> source.{f} OR (target.{f} IS NULL AND source.{f} IS NOT NULL) OR (target.{f} IS NOT NULL AND source.{f} IS NULL))")));
+      //      mergeQuery.AppendLine(" THEN GETDATE() ELSE target.itrg_cdt END,");
+      //
+      //
+      //
+      //
+      //      // 마지막 ',' 제거
+      //      mergeQuery.Remove(mergeQuery.Length - 3, 1);
+      //
+      //      // WHEN NOT MATCHED THEN INSERT 절
+      //      mergeQuery.AppendLine("WHEN NOT MATCHED THEN");
+      //      mergeQuery.AppendLine("INSERT (");
+      //
+      //      // INSERT할 필드 목록
+      //      var insertFields = fieldTypes.Keys.ToList();
+      //      //.Where(f => !excludedFields.Contains(f)).ToList();
+      //      mergeQuery.AppendLine(string.Join(", ", insertFields));
+      //
+      //      mergeQuery.AppendLine(") VALUES (");
+      //
+      //      // INSERT할 값 목록
+      //      foreach (var field in insertFields)
+      //      {
+      //          if (field == "itrg_cdt")
+      //          {
+      //              mergeQuery.AppendLine("GETDATE(),"); // 현재 시간
+      //          }
+      //          else
+      //          {
+      //              mergeQuery.AppendLine($"source.{field},");
+      //          }
+      //      }
+      //
+      //      // 마지막 ',' 제거
+      //      mergeQuery.Remove(mergeQuery.Length - 3, 1);
+      //      mergeQuery.AppendLine(");");
+      //
+      //      return mergeQuery.ToString();
+      //  }
         // Bulk insert to temp table
         private async Task BulkInsertToTempTableAsync(SqlConnection connection, SqlTransaction transaction, string tempTableName, DataTable sourceData)
         {
@@ -454,6 +462,7 @@ namespace SyncLibrary
             }
         }
         
+        // 임시 테이블에 원본 데이터 삭제
         private async Task BulkInsertToTempTableAsync(SqlConnection connection, SqlTransaction transaction, string tempTableName, DataTable sourceData, int chunkSize = 50000)
         {
             // DataTable을 청크 단위로 나눠서 처리
