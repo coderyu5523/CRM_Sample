@@ -107,7 +107,7 @@ namespace SyncLibrary
             using (SqlConnection connection = new SqlConnection(connstr))
             {
                 connection.Open();
-
+                // 반복문으로 컬럼 조회
                 string columnQuery = "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName";
                 using (SqlCommand columnCommand = new SqlCommand(columnQuery, connection))
                 {
@@ -139,6 +139,8 @@ namespace SyncLibrary
                     throw new InvalidOperationException($"테이블 '{tableName}'에 대한 열 정보를 찾을 수 없습니다.");
                 }
 
+
+                // pk값 조회
                 string pkQuery = @"
                     SELECT column_name
                     FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC

@@ -7,18 +7,19 @@ using System.Threading.Tasks;
 
 namespace SyncDBConn
 {
+    // 소스DB와 타겟DBㅇ의 연결 정보를 관리하는 클래스
     public class DBConnectionInfoProvider
     {
-        private readonly string _localServer;
-        private readonly string _proxyServer;
-        private readonly Dictionary<string, string> _connectionInfoCache;
+        private readonly string _localServer; // 소스DB
+        private readonly string _proxyServer; // 중계DB
+        private readonly Dictionary<string, string> _connectionInfoCache; // co_cd에 따른 연결 정보 캐시
 
         public DBConnectionInfoProvider(string sourceDBServer, DBConnInfo dbConnInfo)
         {
             _connectionInfoCache = new Dictionary<string, string>();
-            LoadAllConnectionInfo(dbConnInfo.GetProxyConnectionString());
-            _proxyServer = dbConnInfo.GetProxyConnectionString();
-            _localServer = GetConnectionInfo(sourceDBServer);
+            LoadAllConnectionInfo(dbConnInfo.GetProxyConnectionString()); // CRMConnInfoTable를 읽어 캐시에 저장
+            _proxyServer = dbConnInfo.GetProxyConnectionString(); // 프록시서버 연결 정보 저장
+            _localServer = GetConnectionInfo(sourceDBServer); // LoadAllConnectionInfo를 통해 저장된 연결 정보를 저장. 이후에 캐시에서 꺼내서 사용
         }
 
         public DBConnectionInfoProvider(string proxyConnectionString,string localConnectionString , DBConnInfo dbConnInfo)
@@ -77,12 +78,13 @@ namespace SyncDBConn
             return dbConn;
         }
 
+        // 국가 코드에 따른 연결 정보를 반환, kr crm이 국가코드
         public string GetConnectionInfo(string countryCode)
         {
             if (_connectionInfoCache.ContainsKey(countryCode))
             {
                 // 해당 국가 코드가 존재할 경우, 캐시에서 반환
-                return _connectionInfoCache[countryCode];
+                return _connectionInfoCache[countryCode]; // 국가코드에 맞는 DB 연결 문자열 반환
             }
             else
             {
@@ -91,6 +93,7 @@ namespace SyncDBConn
             }
         }
 
+        // kr, crm 등 목적지 데이터 베이스에 따라 연결 문자열을 반환
         public (string SourceConnectionString, string DestinationConnectionString) GetConnectionInfo(string srcNatCd, string desNatCd)
         {
             if (_connectionInfoCache.TryGetValue(srcNatCd, out var sourceConnection) &&

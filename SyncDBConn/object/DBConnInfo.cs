@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SyncDBConn
 {
+    // Proxy DB 연결 정보를 관리하는 클래스
     public class DBConnInfo
     {
 

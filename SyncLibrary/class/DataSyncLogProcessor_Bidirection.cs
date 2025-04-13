@@ -88,6 +88,7 @@ namespace SyncLibrary
                             //프로시저가 없는 경우 프로시저 호출은 하지 않는다.
                             if (_syncTaskJob.ProcedureName != "" && _syncTaskJob.ProcedureName != null)
                             {
+                                // 프로시저 호출
                                 await ExecuteStoredProcedureAsync(connection, transaction);
                             }
                             // 처리된 로그의 상태를 업데이트
@@ -126,6 +127,7 @@ namespace SyncLibrary
             }
         }
 
+        // 변경로그 DB 반영
         private async Task<bool> ApplyBatchToTempTableAsync(DataTable logData, SqlConnection connection, SqlTransaction transaction, List<int> processedLogIds)
         {
             try
@@ -149,6 +151,7 @@ namespace SyncLibrary
                     if (tableName != old_tableName)
                     {
                         old_tableName = tableName;
+                        // 필드 타입 및 기본 키 가져오기
                         (fieldTypes, primaryKeys) = GetFieldTypesAndPrimaryKeyFromDatabase(tableName, _dbConnectionInfoProvider.LocalServer());
                         Console.WriteLine($"필드 타입 및 기본 키 갱신 - 테이블: {tableName}");
                     }
@@ -199,14 +202,15 @@ namespace SyncLibrary
             }
         }
 
+        // 프로시저 호출 
         private async Task ExecuteStoredProcedureAsync(SqlConnection connection, SqlTransaction transaction)
         {
             try
             {
-
+                // 프로시저 이름 가져옴
                 using (SqlCommand command = new SqlCommand(_syncTaskJob.ProcedureName, connection, transaction))
                 {
-                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandType = CommandType.StoredProcedure; // SQL문이 아닌 프로시저임을 명시
                     command.CommandTimeout = 120;
                     string value = "";
                     //command.Parameters.AddWithValue("@wrk_ty", value);

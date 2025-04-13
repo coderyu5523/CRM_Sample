@@ -372,75 +372,7 @@ namespace SyncLibrary
 
             return mergeQuery.ToString();
         }
-        // MERGE 쿼리 생성
-      //  private string GenerateMergeQuery_old(string tempTableName, string targetTableName, Dictionary<string, (string DataType, int? MaxLength, int? Precision, int? Scale)> fieldTypes, List<string> primaryKeys, string excludedField)
-      //  {
-      //      // 제외할 필드를 배열로 변환
-      //      var excludedFields = excludedField.Split(',').Select(f => f.Trim()).ToList();
-      //
-      //      // MERGE 쿼리 시작 부분 생성
-      //      StringBuilder mergeQuery = new StringBuilder();
-      //      mergeQuery.AppendLine($"MERGE INTO {targetTableName} AS target");
-      //      mergeQuery.AppendLine($"USING {tempTableName} AS source");
-      //      mergeQuery.AppendLine("ON");
-      //
-      //      // ON 절에 PRIMARY KEY 조건 추가
-      //      var primaryKeyConditions = primaryKeys.Select(pk => $"target.{pk} = source.{pk}").ToList();
-      //      mergeQuery.AppendLine(string.Join(" AND ", primaryKeyConditions));
-      //
-      //      // WHEN MATCHED THEN UPDATE 절
-      //      mergeQuery.AppendLine("WHEN MATCHED THEN");
-      //      mergeQuery.AppendLine("UPDATE SET");
-      //
-      //      foreach (var field in fieldTypes.Keys.Where(f => !excludedFields.Contains(f) && f != "itrg_cdt"))
-      //      {
-      //          // 필드가 변경되었을 때만 업데이트
-      //          mergeQuery.AppendLine($"target.{field} = source.{field},");
-      //      }
-      //
-      //      // itrg_cdt는 필드가 변경된 경우에만 GETDATE()로 업데이트
-      //      mergeQuery.AppendLine("target.itrg_cdt = CASE WHEN ");
-      //      mergeQuery.AppendLine(string.Join(" OR ", fieldTypes.Keys
-      //          .Where(f => !excludedFields.Contains(f) && f != "itrg_cdt")
-      //          .Select(f => $"(target.{f} <> source.{f} OR (target.{f} IS NULL AND source.{f} IS NOT NULL) OR (target.{f} IS NOT NULL AND source.{f} IS NULL))")));
-      //      mergeQuery.AppendLine(" THEN GETDATE() ELSE target.itrg_cdt END,");
-      //
-      //
-      //
-      //
-      //      // 마지막 ',' 제거
-      //      mergeQuery.Remove(mergeQuery.Length - 3, 1);
-      //
-      //      // WHEN NOT MATCHED THEN INSERT 절
-      //      mergeQuery.AppendLine("WHEN NOT MATCHED THEN");
-      //      mergeQuery.AppendLine("INSERT (");
-      //
-      //      // INSERT할 필드 목록
-      //      var insertFields = fieldTypes.Keys.ToList();
-      //      //.Where(f => !excludedFields.Contains(f)).ToList();
-      //      mergeQuery.AppendLine(string.Join(", ", insertFields));
-      //
-      //      mergeQuery.AppendLine(") VALUES (");
-      //
-      //      // INSERT할 값 목록
-      //      foreach (var field in insertFields)
-      //      {
-      //          if (field == "itrg_cdt")
-      //          {
-      //              mergeQuery.AppendLine("GETDATE(),"); // 현재 시간
-      //          }
-      //          else
-      //          {
-      //              mergeQuery.AppendLine($"source.{field},");
-      //          }
-      //      }
-      //
-      //      // 마지막 ',' 제거
-      //      mergeQuery.Remove(mergeQuery.Length - 3, 1);
-      //      mergeQuery.AppendLine(");");
-      //
-      //      return mergeQuery.ToString();
-      //  }
+
         // Bulk insert to temp table
         private async Task BulkInsertToTempTableAsync(SqlConnection connection, SqlTransaction transaction, string tempTableName, DataTable sourceData)
         {
